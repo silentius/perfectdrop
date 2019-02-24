@@ -1,0 +1,73 @@
+#include "Group.h"
+#include "ParserNode.h"
+#include "Database.h"
+#include "Variant.h"
+#include "Item.h"
+#include <QDebug>
+
+Group::Group() {
+}
+
+Group::~Group() {
+    for (auto entry : m_entries) {
+        delete(entry);
+    }
+}
+
+void Group::init(ParserNode *node, const Database &db) {
+    while(node->hasNext()) {
+        parse(node->getNext(), db);
+    }
+}
+
+void Group::parse(ParserNode *node, const Database &db) {
+    const QString type(node->pop().toString());
+    if (type == "index") {
+        m_groupId = node->pop().toInt32();
+    } else if (type == "money") {
+        while(node->hasNext()) {
+            parseMoney(node->getNext(), db);
+        }
+    } else if (type == "item") {
+        while(node->hasNext()) {
+            parseItem(node->getNext(), db);
+        }
+    }
+}
+
+void Group::parseMoney(ParserNode *node, const Database &db) {
+    add(node->pop().toInt32(), db.getItem(31), 0, node->pop().toInt32());
+}
+
+void Group::parseItem(ParserNode *node, const Database &db) {
+    const int32_t chance = node->pop().toInt32();
+    const int32_t index = node->pop().toInt32();
+    const int32_t prefix = node->pop().toInt32();
+    int32_t count = node->pop().toInt32();
+
+    if (count < 1) {
+        count = 1;
+    }
+    add(chance, db.getItem(index), prefix, count);
+}
+
+int32_t Group::getGroupId() const {
+    return m_groupId;
+}
+
+void Group::add(int32_t chance, const Item *item,
+                int32_t prefix, int32_t count) {
+    m_entries.insert(chance, new Group::Entry(item , prefix, count));
+}
+
+const Group::Entry *Group::getItem() const {
+    const int32_t rndVal(1+(qrand()%1000));
+    EntryMap::const_iterator itr(m_entries.begin());
+    const EntryMap::const_iterator itrE(m_entries.end());
+    for (; itr != itrE; ++itr) {
+        if (rndVal <= itr.key()) {
+            return itr.value();
+        }
+    }
+    return nullptr;
+}
