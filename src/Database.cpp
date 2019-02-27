@@ -13,8 +13,7 @@ Database::Database() : m_defaultString("") {
 }
 
 bool Database::init() {
-    //QFile myConfig("PerfectDrop.cfg");
-    QFile myConfig("A:\\KalOnlineDevelopment\\Perfect Drop\\PerfectDrop.cfg");
+    QFile myConfig("PerfectDrop.cfg");
     if (!myConfig.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,"File not found error",
                              QString("Unable to open %1!").arg(myConfig.fileName()));
@@ -38,12 +37,20 @@ bool Database::init() {
             pathToItemGroupNames  = list.at(1).trimmed();
         }
     }
+    if (m_pathToGame.size() > 0 && !m_pathToGame.endsWith("\\")) {
+        m_pathToGame.append("/");
+    }
+    if (m_pathToServer.size() > 0 && !m_pathToServer.endsWith("\\")) {
+        m_pathToServer.append("/");
+    }
+
+    /*
     if (m_pathToGame.isEmpty() || m_pathToServer.isEmpty()
             || pathToMsgDat.isEmpty() || pathToItemGroupNames.isEmpty()) {
         QMessageBox::warning(nullptr,"Config not valid",
                              "At least one parameter is missing!");
         return false;
-    }
+    }*/
     parseMessageDat(pathToMsgDat);
     parseItemGroupNames(pathToItemGroupNames);
     parseItems(m_pathToServer);
@@ -55,6 +62,8 @@ void Database::reloadItemGroups() {
         delete(itemGroup);
     }
     m_itemGroups.clear();
+    // cleanup the static groups map
+    ItemGroup::deleteGroups();
     parseItemGroups(m_pathToServer);
 }
 
@@ -117,8 +126,10 @@ int32_t Database::getItemGroupIdFromName(const QString &name) const {
 
 void Database::parseItems(const QString &pathToServer) {
     Parser parser;
+    QString loc = QString("%1Config/InitItem.txt").arg(pathToServer);
+    qDebug() << loc;
     parser.parse("dontcare",
-                 QString("%1/Config/InitItem.txt").arg(pathToServer).toStdString());
+                 QString("%1Config/InitItem.txt").arg(pathToServer).toStdString());
     ParserNode *node = parser.getRoot("dontcare");
     if (node == nullptr) {
         return;
@@ -133,7 +144,7 @@ void Database::parseItems(const QString &pathToServer) {
 void Database::parseItemGroups(const QString &pathToServer) {
     Parser parser;
     parser.parse("dontcare",
-                 QString("%1/Config/ItemGroup.txt").arg(pathToServer).toStdString());
+                 QString("%1Config/ItemGroup.txt").arg(pathToServer).toStdString());
     ParserNode *node = parser.getRoot("dontcare");
             ItemGroup *itemGroup = new ItemGroup;
     while (node->hasNext()) {

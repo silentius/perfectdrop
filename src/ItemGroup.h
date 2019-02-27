@@ -23,6 +23,9 @@ class ItemGroup {
 
         /// returns m_itemGroupId
         int32_t getItemGroupId() const;
+
+        /// this method should be called before loading itemgroups
+        static void deleteGroups();
     private:
         /// helper method used to fill m_groups
         void add(int32_t chance, Group *group);

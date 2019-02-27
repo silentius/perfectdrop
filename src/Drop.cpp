@@ -20,7 +20,7 @@ void Drop::incQuantity(int32_t quantity) {
 void Drop::paintEvent(QPaintEvent *) {
     QPainter pp(this);
 
-    QPixmap pixm(QString("%1/data/HyperText/%2.bmp")
+    QPixmap pixm(QString("%1data/HyperText/%2.bmp")
             .arg(m_location)
             .arg(m_item->getFileName()));
     if (pixm.isNull()) {
