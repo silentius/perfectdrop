@@ -9,14 +9,6 @@ ItemGroup::ItemGroup() {
 }
 
 ItemGroup::~ItemGroup() {
-    // pretty much aware that this is ugly but
-    // it solves soo many issues :-)
-    /*if (!ItemGroup::m_groups.empty()) {
-        for (auto entry : ItemGroup::m_groups) {
-            delete(entry);
-        }
-        ItemGroup::m_groups.clear();
-    }*/
 }
 
 void ItemGroup::init(ParserNode *node, const Database &db) {
@@ -32,6 +24,13 @@ void ItemGroup::init(ParserNode *node, const Database &db) {
     } else {
         return;
     }
+}
+
+void ItemGroup::deleteGroups() {
+    for (auto group : m_groups) {
+        delete(group);
+    }
+    m_groups.clear();
 }
 
 void ItemGroup::parseGroup(ParserNode *node, const Database &db) {
