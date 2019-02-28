@@ -119,7 +119,7 @@ void PerfectDrop::processKill() {
             }
 
             if (addItem) {
-                Drop *drop = new Drop(m_ui, droppedItem->item, m_db->getPathToGame());
+                Drop *drop = new Drop(m_ui, droppedItem->item, *m_db);
                 if (m_ui->dropItem(drop)) {
                     m_drops.append(drop);
                 } else {

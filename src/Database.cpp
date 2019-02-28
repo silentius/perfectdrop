@@ -14,6 +14,8 @@ Database::Database() : m_defaultString("") {
 
 bool Database::init() {
     QFile myConfig("PerfectDrop.cfg");
+    // debug only
+    //QFile myConfig("A:\\KalOnlineDevelopment\\Perfect Drop\\PerfectDrop.cfg");
     if (!myConfig.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,"File not found error",
                              QString("Unable to open %1!").arg(myConfig.fileName()));
@@ -37,6 +39,7 @@ bool Database::init() {
             pathToItemGroupNames  = list.at(1).trimmed();
         }
     }
+
     if (m_pathToGame.size() > 0 && !m_pathToGame.endsWith("\\")) {
         m_pathToGame.append("/");
     }
@@ -44,13 +47,6 @@ bool Database::init() {
         m_pathToServer.append("/");
     }
 
-    /*
-    if (m_pathToGame.isEmpty() || m_pathToServer.isEmpty()
-            || pathToMsgDat.isEmpty() || pathToItemGroupNames.isEmpty()) {
-        QMessageBox::warning(nullptr,"Config not valid",
-                             "At least one parameter is missing!");
-        return false;
-    }*/
     parseMessageDat(pathToMsgDat);
     parseItemGroupNames(pathToItemGroupNames);
     parseItems(m_pathToServer);
@@ -162,7 +158,7 @@ void Database::parseItemGroups(const QString &pathToServer) {
 }
 
 const QString &Database::getName(int32_t index) const {
-    globals::IdStringHash::const_iterator itr(m_names.find(index));
+    IdStringHash::const_iterator itr(m_names.find(index));
     if (itr != m_names.end()) {
         return *itr;
     }
@@ -170,7 +166,7 @@ const QString &Database::getName(int32_t index) const {
 }
 
 const QString &Database::getDesc(int32_t index) const {
-    globals::IdStringHash::const_iterator itr(m_descriptions.find(index));
+    IdStringHash::const_iterator itr(m_descriptions.find(index));
     if (itr != m_descriptions.end()) {
         return *itr;
     }
@@ -178,7 +174,7 @@ const QString &Database::getDesc(int32_t index) const {
 }
 
 const QString &Database::getPrefix(int32_t index) const {
-    globals::IdStringHash::const_iterator itr(m_prefixes.find(index));
+    IdStringHash::const_iterator itr(m_prefixes.find(index));
     if (itr != m_prefixes.end()) {
         return *itr;
     }
@@ -186,7 +182,7 @@ const QString &Database::getPrefix(int32_t index) const {
 }
 
 const QString &Database::getItemGroupName(int32_t index) const {
-    globals::IdStringHash::const_iterator itr(m_itemGroupNames.find(index));
+    IdStringHash::const_iterator itr(m_itemGroupNames.find(index));
     if (itr != m_itemGroupNames.end()) {
         return *itr;
     }

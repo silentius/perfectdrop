@@ -23,10 +23,8 @@ void Item::parse(ParserNode *node) {
         m_index = node->pop().toInt32();
     } else if (name == "Image") {
         m_fileName = node->pop().toString();
-    } else if (name == "sell") {
-        m_sell = node->pop().toInt32();
-    } else if (name == "buy") {
-        m_buy = node->pop().toInt32();
+    } else if (name == "name") {
+        m_nameId = node->pop().toInt32();
     } else if (name == "plural") {
         m_stackable = node->pop().toInt32() == 1;
     }
@@ -34,6 +32,10 @@ void Item::parse(ParserNode *node) {
 
 int32_t Item::getIndex() const {
     return m_index;
+}
+
+int32_t Item::getNameId() const {
+    return m_nameId;
 }
 
 const QString &Item::getFileName() const {

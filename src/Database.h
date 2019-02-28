@@ -1,7 +1,6 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include "Globals.h"
 #include "Group.h"
 #include <QHash>
 
@@ -12,6 +11,8 @@ class Database {
     public:
         using Items = QHash <int32_t, Item *>;
         using ItemGroups = QHash <int32_t, ItemGroup *>;
+        using IdStringHash = QHash <int32_t, QString>;
+        using StringIdHash = QHash <QString, int32_t>;
     public:
         /// constructor
         Database();
@@ -68,11 +69,11 @@ class Database {
         QString m_pathToGame;
         QString m_pathToServer;
 
-        globals::IdStringHash m_names;
-        globals::IdStringHash m_descriptions;
-        globals::IdStringHash m_prefixes;
-        globals::IdStringHash m_itemGroupNames;
-        globals::StringIdHash m_itemGroupIds;
+        IdStringHash m_names;
+        IdStringHash m_descriptions;
+        IdStringHash m_prefixes;
+        IdStringHash m_itemGroupNames;
+        StringIdHash m_itemGroupIds;
         Items m_items;
         ItemGroups m_itemGroups;
 

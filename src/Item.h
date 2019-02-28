@@ -1,7 +1,6 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-#include "Globals.h"
 #include <QEvent>
 #include <QWidget>
 
@@ -17,6 +16,9 @@ class Item : public QWidget {
         /// returns the item index
         int32_t getIndex() const;
 
+        /// returns the name id
+        int32_t getNameId() const;
+
         /// returns the full path to the image file
         const QString &getFileName() const;
 
@@ -27,10 +29,7 @@ class Item : public QWidget {
         void parse(ParserNode *node);
         int32_t m_index = 0;
         QString m_fileName;
-        QString name;
-        QString desc;
-        int32_t m_sell = 0;
-        int32_t m_buy = 0;
+        int32_t m_nameId;
         bool m_stackable = false;
 };
 

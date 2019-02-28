@@ -2,14 +2,17 @@
 #define DROP_H
 
 #include <QWidget>
+#include <QTimer>
 #include <cstdint>
 
 class Item;
+class Database;
 class Drop : public QWidget {
+        Q_OBJECT
     public:
         /// constructor
         Drop(QWidget *parent,
-             const Item *item, const QString &location);
+             const Item *item, const Database &m_db);
 
         /// returns the item index
         int32_t getIndex() const;
@@ -19,9 +22,14 @@ class Drop : public QWidget {
     protected:
         /// used to pain the QPixmap
         void paintEvent(QPaintEvent *);
+
+        void mouseMoveEvent(QMouseEvent *);
+    public slots:
+        void overlayTimerSlot();
     private:
+        const Database &m_db;
         const Item *m_item;
-        QString m_location;
+        QTimer m_overlayTimer;
         int32_t m_quantity = 0;
 };
 
