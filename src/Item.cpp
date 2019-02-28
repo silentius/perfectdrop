@@ -27,6 +27,21 @@ void Item::parse(ParserNode *node) {
         m_nameId = node->pop().toInt32();
     } else if (name == "plural") {
         m_stackable = node->pop().toInt32() == 1;
+    } else if (name == "specialty") {
+        while(node->hasNext()) {
+            parseSpeciality(node->getNext());
+        }
+    }
+}
+
+void Item::parseSpeciality(ParserNode *node) {
+    const QString name(node->pop().toString());
+    if (name == "Changeprefix") {
+        node->pop(); // skip kind because we really don't care
+        m_firstPrefixChance = node->pop().toInt32();
+        m_firstPrefix = node->pop().toInt32();
+        m_secondPrefChance = node->pop().toInt32();
+        m_secondPrefix = node->pop().toInt32();
     }
 }
 
@@ -44,4 +59,24 @@ const QString &Item::getFileName() const {
 
 bool Item::isStackable() const {
     return m_stackable;
+}
+
+int32_t Item::getFirstPrefixChance() const {
+    return m_firstPrefixChance;
+}
+
+int32_t Item::getFirstPrefix() const {
+    return m_firstPrefix;
+}
+
+int32_t Item::getSecondPrefixChance() const {
+    return m_secondPrefChance;
+}
+
+int32_t Item::getSecondPrefix() const {
+    return m_secondPrefix;
+}
+
+bool Item::hasPrefix() const {
+    return getFirstPrefix() && getSecondPrefix();
 }

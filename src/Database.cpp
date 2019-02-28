@@ -13,9 +13,9 @@ Database::Database() : m_defaultString("") {
 }
 
 bool Database::init() {
-    QFile myConfig("PerfectDrop.cfg");
+    //QFile myConfig("PerfectDrop.cfg");
     // debug only
-    //QFile myConfig("A:\\KalOnlineDevelopment\\Perfect Drop\\PerfectDrop.cfg");
+    QFile myConfig("A:\\KalOnlineDevelopment\\Perfect Drop\\PerfectDrop.cfg");
     if (!myConfig.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,"File not found error",
                              QString("Unable to open %1!").arg(myConfig.fileName()));
@@ -67,34 +67,64 @@ const Database::ItemGroups &Database::getItemGroups() const {
     return m_itemGroups;
 }
 
-void Database::genericAddToHash(ParserNode *node) {
-    const QString nodeName(node->pop().toString());
-    const int32_t key(node->pop().toInt32());
-    const QString value(node->pop().toString());
-    if (nodeName == "itemname" || nodeName == "itemdesc" || nodeName == "prefixname") {
-        if (nodeName == "itemname") {
-            m_names[key] = value;
-        } else if (nodeName == "itemdesc") {
-            m_descriptions[key] = value;
-        } else if (nodeName == "prefixname") {
-            m_prefixes[key] = value;
+void Database::parseMessageDat(const QString &fileName) {
+    // not using node parser because it won't work with this design
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(nullptr,"File not found error",QString("Unable to open %1!").arg(fileName));
+        exit(1);
+    }
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine().replace("\t", " ");
+        if (line.startsWith(";")) {
+           continue;
+        }
+        QString type_and_index;
+        QString val;
+        bool inBrackets = false, inVal = false;
+        for (auto sign : line) {
+            if (sign == '(') {
+               inBrackets = true;
+            } else if (sign == ')') {
+               inBrackets = false;
+            } else if (inBrackets) {
+                if (sign == '"' && inVal) {
+                    inVal = false;
+                } else if (sign == '"') {
+                    inVal = true;
+                } else if (inVal) {
+                    val.append(sign);
+                } else {
+                    type_and_index.append(sign);
+                }
+            }
+        }
+        QStringList strList = type_and_index.split(" ");
+        strList.removeAll({}); // who wants empty strings :-)
+        if (strList.size() < 2) {
+            continue;
+        }
+        const int32_t index = strList[1].toInt();
+
+        if (strList[0] == "itemname" || strList[0] == "itemdesc"
+                || strList[0] == "prefixname") {
+            if (strList[0] == "itemname") {
+                m_names[index] = val;
+            } else if (strList[0] == "itemdesc") {
+                m_descriptions[index] = val;
+            } else if (strList[0] == "prefixname") {
+                m_prefixes[index] = val;
+            }
         }
     }
-}
-
-void Database::parseMessageDat(const QString &fileName) {
-    Parser parser;
-    parser.parse("dontcare", fileName.toStdString());
-    ParserNode *node = parser.getRoot("dontcare");
-    if (node == nullptr) {
-        return;
-    }
-    while (node->hasNext()) {
-        genericAddToHash(node->getNext());
-    }
+    file.close();
 }
 
 void Database::parseItemGroupNames(const QString &name) {
+    if (name.size() == 0) {
+        return; // this is optional so no need to terminate if file is not there
+    }
     QFile file(name);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,"File not found error",
@@ -155,6 +185,10 @@ void Database::parseItemGroups(const QString &pathToServer) {
     } else {
         delete(itemGroup);
     }
+}
+
+void Database::parsePrefixes(const QString &pathToServer) {
+
 }
 
 const QString &Database::getName(int32_t index) const {

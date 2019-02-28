@@ -50,9 +50,6 @@ class Database {
         /// returns the ItemGroup hash
         const ItemGroups &getItemGroups() const;
     private:
-        /// helper method for parsing keyvalue iformation and update IdStringHash
-        void genericAddToHash(ParserNode *node);
-
         /// used to parse the message.dat information
         void parseMessageDat(const QString &fileName);
 
@@ -64,6 +61,9 @@ class Database {
 
         /// used to parse ItemGroup.txt
         void parseItemGroups(const QString &pathToServer);
+
+        /// used to parse Prefix.txt
+        void parsePrefixes(const QString &pathToServer);
 
         const QString m_defaultString;
         QString m_pathToGame;
