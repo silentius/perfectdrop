@@ -14,7 +14,7 @@ class UI : public QWidget {
     public:
         using PositionList = QList <QPoint>;
         /// constructor
-        UI();
+        UI(const QString &version);
 
         /// called to initialize the ui
         void init();

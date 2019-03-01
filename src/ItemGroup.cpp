@@ -19,7 +19,7 @@ void ItemGroup::init(ParserNode *node, const Database &db) {
         }
     } else if (type == "itemgroup") {
         while(node->hasNext()) {
-            parseItemGroup(node->getNext());
+            parseItemGroup(node->getNext(), db);
         }
     } else {
         return;
@@ -39,21 +39,26 @@ void ItemGroup::parseGroup(ParserNode *node, const Database &db) {
     m_groups.insert(nextGroup->getGroupId(), nextGroup);
 }
 
-void ItemGroup::parseItemGroup(ParserNode *node) {
+void ItemGroup::parseItemGroup(ParserNode *node, const Database &db) {
     const QString type(node->pop().toString());
     if (type == "index") {
         m_itemGroupId = node->pop().toInt32();
     } else if (type == "group") {
         while(node->hasNext()) {
-            parseItemGroupEntry(node->getNext());
+            parseItemGroupEntry(node->getNext(), db);
         }
     }
 }
 
-void ItemGroup::parseItemGroupEntry(ParserNode *node) {
+void ItemGroup::parseItemGroupEntry(ParserNode *node, const Database &db) {
     const int32_t chance = node->pop().toInt32();
     const int32_t index = node->pop().toInt32();
-    add(chance, m_groups[index]);
+    Group *group(m_groups[index]);
+    if (group == nullptr) {
+        db.logError(QString("group: %1 does not exist in itemgroup: %2")
+                    .arg(index).arg(m_itemGroupId));
+    }
+    add(chance, group);
 }
 
 void ItemGroup::add(int32_t chance, Group *group) {
@@ -66,7 +71,10 @@ const Group::Entry *ItemGroup::getItem() const {
     const EntryMap::const_iterator itrE(m_entries.end());
     for (; itr != itrE; ++itr) {
         if (rndVal <= itr.key()) {
-            return itr.value()->getItem();
+            if (itr.value() != nullptr) {
+                return itr.value()->getItem();
+            }
+            break;
         }
     }
     return nullptr;

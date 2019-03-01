@@ -66,7 +66,7 @@ class Database {
 
         const QString m_defaultString;
         QString m_pathToGame;
-        QString m_pathToServer;
+        QString m_pathToServerConfig;
 
         IdStringHash m_names;
         IdStringHash m_descriptions;
