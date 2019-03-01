@@ -12,7 +12,7 @@ class Drop : public QWidget {
     public:
         /// constructor
         Drop(QWidget *parent,
-             const Item *item, const Database &m_db);
+             const Item &item, const Database &m_db);
 
         /// returns the item index
         int32_t getIndex() const;
@@ -27,8 +27,9 @@ class Drop : public QWidget {
     public slots:
         void overlayTimerSlot();
     private:
+        QString getPrefix();
         const Database &m_db;
-        const Item *m_item;
+        const Item &m_item;
         QTimer m_overlayTimer;
         int32_t m_quantity = 0;
 };

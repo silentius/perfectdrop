@@ -19,7 +19,7 @@ void UI::init() {
     m_startButton  = new QPushButton("Start",m_holderWidget);
     m_lineEdit     = new QLineEdit(m_holderWidget);
     m_lineEdit->setValidator(new QDoubleValidator(1, 10000, 1, this));
-    m_lineEdit->setText("1000");
+    m_lineEdit->setText("10000");
     m_lineEdit->setAlignment( Qt::AlignRight );
 
     m_desiredKills = new QLabel(this);
@@ -38,8 +38,8 @@ void UI::init() {
     m_holderWidget2 = new QWidget(this);
     QLabel *label1  = new QLabel("total kills", m_holderWidget2);
     QLabel *label2  = new QLabel("dropped items", m_holderWidget2);
-    QLabel *label3  = new QLabel("simulator runtime", m_holderWidget2);
-    QLabel *label4  = new QLabel("estimate", m_holderWidget2);
+    QLabel *label3  = new QLabel("null drops", m_holderWidget2);
+    QLabel *label4  = new QLabel("kill per item", m_holderWidget2);
 
     m_killsLabel = new QLabel(m_holderWidget2);
     m_killsLabel->setAlignment (Qt::AlignCenter | Qt::AlignRight);
@@ -49,9 +49,9 @@ void UI::init() {
     m_itemCountLabel->setAlignment (Qt::AlignCenter | Qt::AlignRight);
     m_itemCountLabel->setText("0");
 
-    m_timeLabel = new QLabel(m_holderWidget2);
-    m_timeLabel->setAlignment (Qt::AlignCenter | Qt::AlignRight);
-    m_timeLabel->setText("0");
+    m_nullsLabel = new QLabel(m_holderWidget2);
+    m_nullsLabel->setAlignment (Qt::AlignCenter | Qt::AlignRight);
+    m_nullsLabel->setText("0");
 
     m_estimateLabel = new QLabel(m_holderWidget2);
     m_estimateLabel->setAlignment (Qt::AlignCenter | Qt::AlignRight);
@@ -68,7 +68,7 @@ void UI::init() {
 
     gridLayout2->addWidget(m_killsLabel     ,0, 1);
     gridLayout2->addWidget(m_itemCountLabel ,1, 1);
-    gridLayout2->addWidget(m_timeLabel      ,2, 1);
+    gridLayout2->addWidget(m_nullsLabel     ,2, 1);
     gridLayout2->addWidget(m_estimateLabel  ,3, 1);
 
     // list for name selection
@@ -125,13 +125,15 @@ bool UI::dropItem(Drop *drop) {
 }
 
 void UI::reset() {
-    m_itemCountLabel->setText("0");
-    m_timeLabel->setText("0");
-    m_estimateLabel->setText("0");
-    m_killsLabel->setText("0");
     m_dropPosition = 0;
     m_geons = 0;
     m_kills = 0;
+    m_nullDrops = 0;
+    m_itemsDropped = 0;
+    m_itemCountLabel->setText("0");
+    m_nullsLabel->setText("0");
+    m_estimateLabel->setText("0");
+    m_killsLabel->setText("0");
     repaint();
 }
 
@@ -222,9 +224,19 @@ void UI::setCSS() {
     m_lineEdit->setStyleSheet("QWidget {border: 2px solid #CC9955;}");
 }
 
-
 const QString UI::getSelectedItemGroup() const {
     return m_nameListWidget->currentItem()->text();
+}
+
+void UI::incrementNullDrops() {
+    m_nullsLabel->setText(QString("%1").arg(++m_nullDrops));
+}
+
+void UI::incrementNonNullDrops() {
+    m_itemCountLabel->setText(QString("%1").arg(++m_itemsDropped));
+    if (m_kills > 0) {
+        m_estimateLabel->setText(QString("%1").arg(m_kills/m_itemsDropped));
+    }
 }
 
 void UI::slotStartClicked() {

@@ -10,6 +10,7 @@
 #include <QDebug>
 
 Database::Database() : m_defaultString("") {
+    QFile::remove("error.log");
 }
 
 bool Database::init() {
@@ -51,6 +52,16 @@ bool Database::init() {
     parseItemGroupNames(pathToItemGroupNames);
     parseItems(m_pathToServer);
     return true;
+}
+
+void Database::logError(const QString &error) const {
+    QFile errorFile("error.log");
+    if (errorFile.open(QIODevice::Append | QIODevice::Text | QIODevice::WriteOnly)) {
+        QTextStream outputStream(&errorFile);
+        outputStream << error << "\n";
+        errorFile.close();
+    }
+    qDebug() << error;
 }
 
 void Database::reloadItemGroups() {
@@ -185,10 +196,6 @@ void Database::parseItemGroups(const QString &pathToServer) {
     } else {
         delete(itemGroup);
     }
-}
-
-void Database::parsePrefixes(const QString &pathToServer) {
-
 }
 
 const QString &Database::getName(int32_t index) const {
