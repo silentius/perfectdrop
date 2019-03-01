@@ -5,7 +5,8 @@
 #include <QDebug>
 #include <QThread>
 
-PerfectDrop::PerfectDrop() : m_ui(new UI), m_db(new Database) {   
+PerfectDrop::PerfectDrop(const QString &version)
+    : m_ui(new UI(version)), m_db(new Database) {
 }
 
 PerfectDrop::~PerfectDrop() {
@@ -101,7 +102,7 @@ void PerfectDrop::processKill() {
 
         // first generate the drop
         const Group::Entry *droppedItem(m_db->selectItem(m_itemGroupId));
-        if (droppedItem != nullptr) {
+        if (droppedItem != nullptr && droppedItem->item != nullptr) {
             bool isMoney(droppedItem->item->getIndex() == 31);
             if (!isMoney) {
                 m_ui->incrementNonNullDrops();

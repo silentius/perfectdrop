@@ -31,7 +31,7 @@ class Drop : public QWidget {
         const Database &m_db;
         const Item &m_item;
         QTimer m_overlayTimer;
-        int32_t m_quantity = 0;
+        int32_t m_quantity = 1;
 };
 
 #endif // DROP_H

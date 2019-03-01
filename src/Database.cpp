@@ -8,15 +8,14 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QDebug>
+#include <QDir>
 
 Database::Database() : m_defaultString("") {
     QFile::remove("error.log");
 }
 
 bool Database::init() {
-    //QFile myConfig("PerfectDrop.cfg");
-    // debug only
-    QFile myConfig("A:\\KalOnlineDevelopment\\Perfect Drop\\PerfectDrop.cfg");
+    QFile myConfig(QString("%1\\PerfectDrop.cfg").arg(QDir::currentPath()));
     if (!myConfig.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,"File not found error",
                              QString("Unable to open %1!").arg(myConfig.fileName()));
@@ -32,8 +31,8 @@ bool Database::init() {
         }
         if (list.at(0) == "PathToGame") {
             m_pathToGame = list.at(1).trimmed();
-        } else if (list.at(0) == "PathToServer") {
-            m_pathToServer = list.at(1).trimmed();
+        } else if (list.at(0) == "PathToServerConfig") {
+            m_pathToServerConfig = list.at(1).trimmed();
         } else if (list.at(0) == "MessageDat") {
             pathToMsgDat = list.at(1).trimmed();
         } else if (list.at(0) == "ItemGroupNames") {
@@ -44,13 +43,13 @@ bool Database::init() {
     if (m_pathToGame.size() > 0 && !m_pathToGame.endsWith("\\")) {
         m_pathToGame.append("/");
     }
-    if (m_pathToServer.size() > 0 && !m_pathToServer.endsWith("\\")) {
-        m_pathToServer.append("/");
+    if (m_pathToServerConfig.size() > 0 && !m_pathToServerConfig.endsWith("\\")) {
+        m_pathToServerConfig.append("/");
     }
 
     parseMessageDat(pathToMsgDat);
     parseItemGroupNames(pathToItemGroupNames);
-    parseItems(m_pathToServer);
+    parseItems(m_pathToServerConfig);
     return true;
 }
 
@@ -71,7 +70,7 @@ void Database::reloadItemGroups() {
     m_itemGroups.clear();
     // cleanup the static groups map
     ItemGroup::deleteGroups();
-    parseItemGroups(m_pathToServer);
+    parseItemGroups(m_pathToServerConfig);
 }
 
 const Database::ItemGroups &Database::getItemGroups() const {
@@ -163,10 +162,8 @@ int32_t Database::getItemGroupIdFromName(const QString &name) const {
 
 void Database::parseItems(const QString &pathToServer) {
     Parser parser;
-    QString loc = QString("%1Config/InitItem.txt").arg(pathToServer);
-    qDebug() << loc;
     parser.parse("dontcare",
-                 QString("%1Config/InitItem.txt").arg(pathToServer).toStdString());
+                 QString("%1InitItem.txt").arg(pathToServer).toStdString());
     ParserNode *node = parser.getRoot("dontcare");
     if (node == nullptr) {
         return;
@@ -181,7 +178,7 @@ void Database::parseItems(const QString &pathToServer) {
 void Database::parseItemGroups(const QString &pathToServer) {
     Parser parser;
     parser.parse("dontcare",
-                 QString("%1Config/ItemGroup.txt").arg(pathToServer).toStdString());
+                 QString("%1ItemGroup.txt").arg(pathToServer).toStdString());
     ParserNode *node = parser.getRoot("dontcare");
             ItemGroup *itemGroup = new ItemGroup;
     while (node->hasNext()) {

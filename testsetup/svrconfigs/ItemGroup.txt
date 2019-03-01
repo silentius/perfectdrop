@@ -1,0 +1,9 @@
+
+(group	(index 1)	(money (500 20) (600 50)) (item	(999 1)))
+(group	(index 2)	(money (500 30) (600 60)) (item	(999 2)))
+(group	(index 3)	(money (500 30) (600 70)) (item	(999 3)))
+
+(itemgroup (index 1) (group	(999 1)))
+(itemgroup (index 2) (group	(999 2)))
+(itemgroup (index 3) (group	(999 3)))
+(itemgroup (index 4) (group	(333 1) (666 2) (666 3)))

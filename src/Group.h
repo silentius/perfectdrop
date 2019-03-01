@@ -13,7 +13,7 @@ class Group {
         class Entry {
             public:
                 Entry(const Item *_item,
-                      int32_t _prefix = 0, int32_t _count = 1)
+                      int32_t _prefix, int32_t _count)
                             : item(_item), prefix(_prefix),
                               count(_count) {
                 }

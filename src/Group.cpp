@@ -50,7 +50,8 @@ void Group::parseItem(ParserNode *node, const Database &db) {
     }
     const Item *item(db.getItem(index));
     if (!item) {
-        db.logError(QString("Item does not exist (index %1)").arg(index));
+        db.logError(QString("item index: %1 does not exist in group: %2")
+                    .arg(index).arg(m_groupId));
 
     }
     add(chance, item, prefix, count);

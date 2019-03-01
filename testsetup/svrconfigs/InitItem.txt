@@ -1,0 +1,4 @@
+(item (name 0) (Index 31) (Image "item000") (plural 1))
+(item (name 1) (Index 1) (Image "item001") (plural 1))
+(item (name 2) (Index 2) (Image "item002") (plural 0))
+(item (name 3) (Index 3) (Image "item003") (plural 1) (specialty (Changeprefix weapon 56 1 70 2))

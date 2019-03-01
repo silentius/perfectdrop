@@ -34,10 +34,10 @@ class ItemGroup {
         void parseGroup(ParserNode *node, const Database &db);
 
         /// helper method used to parse ParserNode
-        void parseItemGroup(ParserNode *node);
+        void parseItemGroup(ParserNode *node, const Database &db);
 
         /// helper method used to parse ParserNode
-        void parseItemGroupEntry(ParserNode *node);
+        void parseItemGroupEntry(ParserNode *node, const Database &db);
 
         int32_t m_itemGroupId = 0;
         EntryMap m_entries;

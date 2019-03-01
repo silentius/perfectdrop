@@ -4,8 +4,8 @@
 #include <QGridLayout>
 #include <QDebug>
 
-UI::UI() : QWidget() {
-    setWindowTitle("PerfectDrop by silentius");
+UI::UI(const QString &version) : QWidget() {
+    setWindowTitle(QString("PerfectDrop by silentius - Version: %1").arg(version));
     setFixedSize(400,600);
     setMouseTracking(true);
     init();

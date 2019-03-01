@@ -13,7 +13,7 @@ class PerfectDrop : public QObject {
         using DropList = QList <Drop *>;
     public:
         /// constructor
-        PerfectDrop();
+        PerfectDrop(const QString &version);
 
         /// destructor
         virtual ~PerfectDrop();
