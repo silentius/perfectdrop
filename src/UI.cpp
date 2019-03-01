@@ -1,3 +1,17 @@
+/// This file is part of PerfectDrop.
+///
+/// PerfectDrop is free software: you can redistribute it and/or modify
+/// it under the terms of the GNU General Public License as published by
+/// the Free Software Foundation, either version 3 of the License.
+///
+/// PerfectDrop is distributed in the hope that it will be useful,
+/// but WITHOUT ANY WARRANTY; without even the implied warranty of
+/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/// GNU General Public License for more details.
+///
+/// You should have received a copy of the GNU General Public License
+/// along with PerfectDrop.  If not, see <https://www.gnu.org/licenses/>.
+
 #include "UI.h"
 #include "Drop.h"
 #include <QPainter>
@@ -75,7 +89,7 @@ void UI::init() {
     m_nameListWidget    = new QListWidget(this);
     m_nameListWidget->setGeometry(206, 25, 188, 536);
     m_nameListWidget->setSortingEnabled(true);
-    m_reloadButton = new QPushButton("Reload Configs",this);
+    m_reloadButton = new QPushButton("Reload ItemGroup.txt",this);
     m_reloadButton->setGeometry(206, 565, 188, 29);
 
     // finally apply CSS style
