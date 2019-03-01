@@ -42,6 +42,12 @@ class UI : public QWidget {
 
         /// returns the name of the current group name selected
         const QString getSelectedItemGroup() const;
+
+        /// used to increment the null drop counter (no item on kill)
+        void incrementNullDrops();
+
+        /// used to increment the counter for actual drops
+        void incrementNonNullDrops();
     protected:
         /// helper method used update the ui
         void paintEvent(QPaintEvent *);
@@ -55,6 +61,8 @@ class UI : public QWidget {
         int32_t m_itemGroupId = 0;
         int32_t m_geons = 0;
         int32_t m_kills = 0;
+        int32_t m_nullDrops = 0;
+        int32_t m_itemsDropped = 0;
         QPushButton *m_startButton;
         QPushButton *m_stopButton;
         QPushButton *m_reloadButton;
@@ -62,7 +70,7 @@ class UI : public QWidget {
         QLabel      *m_desiredKills;
         QLabel      *m_killsLabel;
         QLabel      *m_itemCountLabel;
-        QLabel      *m_timeLabel;
+        QLabel      *m_nullsLabel;
         QLabel      *m_estimateLabel;
         QListWidget *m_nameListWidget;
         QPushButton *m_resetButton;

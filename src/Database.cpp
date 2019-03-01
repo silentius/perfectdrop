@@ -10,10 +10,13 @@
 #include <QDebug>
 
 Database::Database() : m_defaultString("") {
+    QFile::remove("error.log");
 }
 
 bool Database::init() {
-    QFile myConfig("PerfectDrop.cfg");
+    //QFile myConfig("PerfectDrop.cfg");
+    // debug only
+    QFile myConfig("A:\\KalOnlineDevelopment\\Perfect Drop\\PerfectDrop.cfg");
     if (!myConfig.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,"File not found error",
                              QString("Unable to open %1!").arg(myConfig.fileName()));
@@ -37,6 +40,7 @@ bool Database::init() {
             pathToItemGroupNames  = list.at(1).trimmed();
         }
     }
+
     if (m_pathToGame.size() > 0 && !m_pathToGame.endsWith("\\")) {
         m_pathToGame.append("/");
     }
@@ -44,17 +48,20 @@ bool Database::init() {
         m_pathToServer.append("/");
     }
 
-    /*
-    if (m_pathToGame.isEmpty() || m_pathToServer.isEmpty()
-            || pathToMsgDat.isEmpty() || pathToItemGroupNames.isEmpty()) {
-        QMessageBox::warning(nullptr,"Config not valid",
-                             "At least one parameter is missing!");
-        return false;
-    }*/
     parseMessageDat(pathToMsgDat);
     parseItemGroupNames(pathToItemGroupNames);
     parseItems(m_pathToServer);
     return true;
+}
+
+void Database::logError(const QString &error) const {
+    QFile errorFile("error.log");
+    if (errorFile.open(QIODevice::Append | QIODevice::Text | QIODevice::WriteOnly)) {
+        QTextStream outputStream(&errorFile);
+        outputStream << error << "\n";
+        errorFile.close();
+    }
+    qDebug() << error;
 }
 
 void Database::reloadItemGroups() {
@@ -71,34 +78,64 @@ const Database::ItemGroups &Database::getItemGroups() const {
     return m_itemGroups;
 }
 
-void Database::genericAddToHash(ParserNode *node) {
-    const QString nodeName(node->pop().toString());
-    const int32_t key(node->pop().toInt32());
-    const QString value(node->pop().toString());
-    if (nodeName == "itemname" || nodeName == "itemdesc" || nodeName == "prefixname") {
-        if (nodeName == "itemname") {
-            m_names[key] = value;
-        } else if (nodeName == "itemdesc") {
-            m_descriptions[key] = value;
-        } else if (nodeName == "prefixname") {
-            m_prefixes[key] = value;
+void Database::parseMessageDat(const QString &fileName) {
+    // not using node parser because it won't work with this design
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(nullptr,"File not found error",QString("Unable to open %1!").arg(fileName));
+        exit(1);
+    }
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine().replace("\t", " ");
+        if (line.startsWith(";")) {
+           continue;
+        }
+        QString type_and_index;
+        QString val;
+        bool inBrackets = false, inVal = false;
+        for (auto sign : line) {
+            if (sign == '(') {
+               inBrackets = true;
+            } else if (sign == ')') {
+               inBrackets = false;
+            } else if (inBrackets) {
+                if (sign == '"' && inVal) {
+                    inVal = false;
+                } else if (sign == '"') {
+                    inVal = true;
+                } else if (inVal) {
+                    val.append(sign);
+                } else {
+                    type_and_index.append(sign);
+                }
+            }
+        }
+        QStringList strList = type_and_index.split(" ");
+        strList.removeAll({}); // who wants empty strings :-)
+        if (strList.size() < 2) {
+            continue;
+        }
+        const int32_t index = strList[1].toInt();
+
+        if (strList[0] == "itemname" || strList[0] == "itemdesc"
+                || strList[0] == "prefixname") {
+            if (strList[0] == "itemname") {
+                m_names[index] = val;
+            } else if (strList[0] == "itemdesc") {
+                m_descriptions[index] = val;
+            } else if (strList[0] == "prefixname") {
+                m_prefixes[index] = val;
+            }
         }
     }
-}
-
-void Database::parseMessageDat(const QString &fileName) {
-    Parser parser;
-    parser.parse("dontcare", fileName.toStdString());
-    ParserNode *node = parser.getRoot("dontcare");
-    if (node == nullptr) {
-        return;
-    }
-    while (node->hasNext()) {
-        genericAddToHash(node->getNext());
-    }
+    file.close();
 }
 
 void Database::parseItemGroupNames(const QString &name) {
+    if (name.size() == 0) {
+        return; // this is optional so no need to terminate if file is not there
+    }
     QFile file(name);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,"File not found error",
@@ -162,7 +199,7 @@ void Database::parseItemGroups(const QString &pathToServer) {
 }
 
 const QString &Database::getName(int32_t index) const {
-    globals::IdStringHash::const_iterator itr(m_names.find(index));
+    IdStringHash::const_iterator itr(m_names.find(index));
     if (itr != m_names.end()) {
         return *itr;
     }
@@ -170,7 +207,7 @@ const QString &Database::getName(int32_t index) const {
 }
 
 const QString &Database::getDesc(int32_t index) const {
-    globals::IdStringHash::const_iterator itr(m_descriptions.find(index));
+    IdStringHash::const_iterator itr(m_descriptions.find(index));
     if (itr != m_descriptions.end()) {
         return *itr;
     }
@@ -178,7 +215,7 @@ const QString &Database::getDesc(int32_t index) const {
 }
 
 const QString &Database::getPrefix(int32_t index) const {
-    globals::IdStringHash::const_iterator itr(m_prefixes.find(index));
+    IdStringHash::const_iterator itr(m_prefixes.find(index));
     if (itr != m_prefixes.end()) {
         return *itr;
     }
@@ -186,7 +223,7 @@ const QString &Database::getPrefix(int32_t index) const {
 }
 
 const QString &Database::getItemGroupName(int32_t index) const {
-    globals::IdStringHash::const_iterator itr(m_itemGroupNames.find(index));
+    IdStringHash::const_iterator itr(m_itemGroupNames.find(index));
     if (itr != m_itemGroupNames.end()) {
         return *itr;
     }

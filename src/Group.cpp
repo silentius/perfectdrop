@@ -48,7 +48,12 @@ void Group::parseItem(ParserNode *node, const Database &db) {
     if (count < 1) {
         count = 1;
     }
-    add(chance, db.getItem(index), prefix, count);
+    const Item *item(db.getItem(index));
+    if (!item) {
+        db.logError(QString("Item does not exist (index %1)").arg(index));
+
+    }
+    add(chance, item, prefix, count);
 }
 
 int32_t Group::getGroupId() const {

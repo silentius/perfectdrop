@@ -27,32 +27,31 @@ CONFIG += c++11
 SOURCES += \
         src\main.cpp \
         src\PerfectDrop.cpp \
-		src\UI.cpp \
-		src\Item.cpp \
-		src\Parser.cpp \
-		src\Database.cpp \
-		src\ParserNode.cpp \
-		src\Variant.cpp \
-		src\Group.cpp \
-		src\ItemGroup.cpp \
-		src\Drop.cpp
+        src\UI.cpp \
+        src\Item.cpp \
+        src\Parser.cpp \
+        src\Database.cpp \
+        src\ParserNode.cpp \
+        src\Variant.cpp \
+        src\Group.cpp \
+        src\ItemGroup.cpp \
+        src\Drop.cpp
 
 HEADERS += \
         src\PerfectDrop.h \
-		src\UI.h \
-		src\Item.h \
-		src\Parser.h \
-		src\Database.h \
-		src\Globals.h \
-		src\ParserNode.h \
-		src\Variant.h \
-		src\Group.h \
-		src\ItemGroup.h \
-		src\Drop.h
+        src\UI.h \
+        src\Item.h \
+        src\Parser.h \
+        src\Database.h \
+        src\ParserNode.h \
+        src\Variant.h \
+        src\Group.h \
+        src\ItemGroup.h \
+        src\Drop.h
 
 RESOURCES += images/resource.qrc
-RC_FILE	   = images/icon.rc	
-	
+RC_FILE   = images/icon.rc    
+    
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

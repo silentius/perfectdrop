@@ -59,7 +59,7 @@ void PerfectDrop::slotReloadClicked() {
     m_db->reloadItemGroups();
     Database::ItemGroups::ConstIterator itr(m_db->getItemGroups().begin());
     const Database::ItemGroups::ConstIterator itrE(m_db->getItemGroups().end());
-    //;
+
     QStringList groupNameList;
     for (; itr != itrE; ++itr) {
         const QString &groupName = m_db->getItemGroupName(itr.key());
@@ -102,8 +102,12 @@ void PerfectDrop::processKill() {
         // first generate the drop
         const Group::Entry *droppedItem(m_db->selectItem(m_itemGroupId));
         if (droppedItem != nullptr) {
+            bool isMoney(droppedItem->item->getIndex() == 31);
+            if (!isMoney) {
+                m_ui->incrementNonNullDrops();
+            }
             bool addItem(true);
-            if (droppedItem->item->getIndex() == 31) {
+            if (isMoney) {
                 // is item money, if yes only increment money
                 m_ui->addGeons(droppedItem->count);
                 addItem = false;
@@ -119,7 +123,7 @@ void PerfectDrop::processKill() {
             }
 
             if (addItem) {
-                Drop *drop = new Drop(m_ui, droppedItem->item, m_db->getPathToGame());
+                Drop *drop = new Drop(m_ui, *droppedItem->item, *m_db);
                 if (m_ui->dropItem(drop)) {
                     m_drops.append(drop);
                 } else {
@@ -128,6 +132,8 @@ void PerfectDrop::processKill() {
                     delete drop;
                 }
             }
+        } else {
+            m_ui->incrementNullDrops();
         }
 
         m_ui->incrementKills();
